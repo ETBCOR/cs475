@@ -1,21 +1,17 @@
 /*****************************
- * File:	warmup.cpp
+ * File:	nn.cpp
  * Project:	Assignment 1
  * Class:	cs475
  * Asn. Pg:	http://marvin.cs.uidaho.edu/Teaching/CS475/pas01.pdf
  *
  *****************************/
-#include <iostream>
-#include <time.h>
-#include <stdlib.h>
-#include "mat.h"
-#include "rand.h"
+#include "nn.h"
 
 // ---- constants ---- //
 const double eta = 0.1;
 const double slope = 0.1;
 const double bias = 1.0;
-const int numPasses = 1000000;
+const int numPasses = 100000;
 //const double spread = 0.0;
 
 const bool debug = false;
