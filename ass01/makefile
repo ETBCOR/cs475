@@ -1,7 +1,7 @@
 CXXFLAGS=-O3 -Wall # optimize and complain
 
 FILENAME=nn
-TEST=or
+TEST=irisData
 
 o: ${FILENAME}.cpp mat.o rand.o
 	g++ -o a.o ${FILENAME}.cpp mat.o rand.o

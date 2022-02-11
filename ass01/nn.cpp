@@ -12,13 +12,14 @@
 #include "rand.h"
 
 // ---- constants ---- //
-const double eta = 0.0001;
-const double slope = 0.0001;
+const double eta = 0.1;
+const double slope = 0.1;
 const double bias = 1.0;
-const int numPasses = 1000;
+const int numPasses = 1000000;
 //const double spread = 0.0;
 
 const bool debug = false;
+const int peek = 5;
 
 double transfer (int, double*);
 
@@ -37,6 +38,9 @@ int main (int argc, char *argv[]) {
 	Matrix trO = Matrix("out"); // training output
 	Matrix tsI = Matrix("in");  // test input
 	Matrix tsO = Matrix("out"); // test output
+
+	Matrix trIU = Matrix("trIU"); // training input (unnormalized)
+	
 	Matrix w = Matrix("w"); // weights
 	Matrix d = Matrix("d"); // delta
 
@@ -45,9 +49,13 @@ int main (int argc, char *argv[]) {
 	Matrix t = Matrix("t"); // 
 	Matrix df = Matrix("df"); // diff (t - y)
 
+	Matrix r = Matrix("r");
+	Matrix m = Matrix("m");
+
 	// read in the input data
 	trI.read();
 	tsI.read();
+	trIU = Matrix(trI);
 	// extract the expected outputs
 	trO = trI.extract(0, N, 0, 0);
 	tsO = tsI.extract(0, N, 0, 0);
@@ -57,9 +65,11 @@ int main (int argc, char *argv[]) {
 	// truncate the data (cut out expected outputs)
 	trI = Matrix(trI.extract(0, 0, 0, N));
 	tsI = Matrix(tsI.extract(0, 0, 0, N));
+	trIU = Matrix(trIU.extract(0, 0, 0, N));
 	// add bias column vector
 	Matrix bV = Matrix(trI.numRows(), 1, bias);
 	trI = trI.joinRight(bV);
+	trIU = trIU.joinRight(bV);
 		   bV = Matrix(tsI.numRows(), 1, bias);
 	tsI = tsI.joinRight(bV);
 
@@ -70,40 +80,56 @@ int main (int argc, char *argv[]) {
 	d = Matrix(trI.numCols(), 1, 0.0);
 
 	// --- print input that was read ---- //
-	/*trI.print("Inputs + bias:");
-	trO.print("Outputs:");
-	tsI.print("Test Inputs + bias:");
-	tsO.print("Expected Outputs:");*/
+	if (!debug) {
+		trI.print("Inputs + bias:");
+		trO.print("Outputs:");
+		tsI.print("Test Inputs + bias:");
+		tsO.print("Expected Outputs:");
+	}
 
 	// shuffle the training data
 	//trI.shuffle();
 
 	// ---- main training loop ---- //
-	for (int itr = 0; itr < numPasses; itr++) {	
+	for (int itr = 0; itr < numPasses; itr++) {
 		int i = rand() % trI.numRows();
 
 		x = trI.extract(i, 0, 1, 0);
 		t = trO.extract(i, 0, 1, 0);
-		y = x.dot(w);//.mapCol(&transfer);
-		df = t.sub(y); //df.print();
+		y = x.dot(w).mapCol(&transfer);
+		df = t.sub(y);
 		
 		d = x.Tdot(df).scalarMul(eta);
 		w = w.add(d);
 
-		if (/*debug*/ itr < 10 || itr > numPasses-10) {
+		if (debug && (itr < peek || itr > numPasses - peek)) {
 			printf("\nitr: %d\n", itr);
-			w.print();
+			/*w.print();
 			x.print();
 			t.print();
 			y.print();
-			d.print();
+			d.print();*/
 			printf("diff:\n");
 			df.print();
-		}	
+		}
 	}
-	//m.print("Tests + bias + results + diff:");
+
+	// ---- get results based on test data ---- //
+	for (int i = 0; i < tsI.numRows(); i++) {
+		x = tsI.extract(i, 0, 1, 0);
+		t = tsO.extract(i, 0, 1, 0);
+		y = x.dot(w).mapCol(&transfer);
+		df = t.sub(y);
+
+		y = y.joinRight(df);
+		r = r.joinBottom(y);
+	}
+
+	m = tsI.joinRight(r);
+	m.print("Tests + bias + results + diff:");
 }
 
 double transfer (int s, double *v) {
 	return 1.0 / (1.0 + exp(-slope * *v));
+	//return *v < 0.5 ? 0.0 : 1.0;
 }
