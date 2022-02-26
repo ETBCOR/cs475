@@ -1,23 +1,22 @@
 /*****************************
- * File:	nn.cpp
- * Project:	Assignment 1
- * Class:	cs475
- * Asn. Pg:	http://marvin.cs.uidaho.edu/Teaching/CS475/pas01.pdf
+ * By:			Ethan Corgatelli
+ * File:		nn.cpp
+ * Project:		Assignment 1 (improved!)
+ * Class:		cs475
+ * Asn. Pg:		http://marvin.cs.uidaho.edu/Teaching/CS475/pas01.pdf
  *
  *****************************/
 #include "nn.h"
 
 // ---- constants ---- //
-const double eta = 0.1;
+const double eta = 2.0;
 const double slope = 0.1;
-const double bias = 1.0;
-const int numPasses = 100000;
-//const double spread = 0.0;
+const double bias = -1.0;
+const int numPasses = 10000;
+const double spread = 0.5;
 
 const bool debug = false;
 const int peek = 5;
-
-double transfer (int, double*);
 
 int main (int argc, char *argv[]) {
 
@@ -30,47 +29,42 @@ int main (int argc, char *argv[]) {
 	int N; cin >> N;
 
 	// initialize and name arrays
-	Matrix trI = Matrix("in");  // training input
-	Matrix trO = Matrix("out"); // training output
-	Matrix tsI = Matrix("in");  // test input
-	Matrix tsO = Matrix("out"); // test output
-
-	Matrix trIU = Matrix("trIU"); // training input (unnormalized)
+		// setup matrices
+	Matrix trI = Matrix("in");    // training input
+	Matrix trO = Matrix("out");   // training output
 	
+		// for the training
 	Matrix w = Matrix("w"); // weights
+	Matrix x = Matrix("x"); // in
 	Matrix d = Matrix("d"); // delta
+	Matrix y = Matrix("y"); // out
+	Matrix t = Matrix("t"); // expected
+	Matrix df = Matrix("df"); // difference (t - y)
 
-	Matrix x = Matrix("x"); // 
-	Matrix y = Matrix("y"); // 
-	Matrix t = Matrix("t"); // 
-	Matrix df = Matrix("df"); // diff (t - y)
+		// for the output
+	Matrix r = Matrix("r"); // recursivly built row by row
+	Matrix m = Matrix("m"); // final output matrix
 
-	Matrix r = Matrix("r");
-	Matrix m = Matrix("m");
 
 	// read in the input data
 	trI.read();
-	tsI.read();
-	trIU = Matrix(trI);
+
 	// extract the expected outputs
 	trO = trI.extract(0, N, 0, 0);
-	tsO = tsI.extract(0, N, 0, 0);
-	// normalize the data
-	trI.normalize();
-	tsI.normalize();
+
 	// truncate the data (cut out expected outputs)
 	trI = Matrix(trI.extract(0, 0, 0, N));
-	tsI = Matrix(tsI.extract(0, 0, 0, N));
-	trIU = Matrix(trIU.extract(0, 0, 0, N));
-	// add bias column vector
-	Matrix bV = Matrix(trI.numRows(), 1, bias);
-	trI = trI.joinRight(bV);
-	trIU = trIU.joinRight(bV);
-		   bV = Matrix(tsI.numRows(), 1, bias);
-	tsI = tsI.joinRight(bV);
 
+	// normalize the data
+	/*Matrix norm = */trI.normalizeCols();
+
+	// add bias column vector
+	Matrix bV = Matrix(trI.numRows(), 1, bias, "bias");
+	trI = trI.joinRight(bV);
+	
 	// settup weights vector
-	w = Matrix(trI.numCols(), trO.numCols(), 0.0).rand(-1.0, 1.0);
+	w = Matrix(trI.numCols(), trO.numCols(), 0.0)
+							.rand(-spread, spread);
 	
 	// settup delta vector
 	d = Matrix(trI.numCols(), 1, 0.0);
@@ -79,20 +73,17 @@ int main (int argc, char *argv[]) {
 	if (!debug) {
 		trI.print("Inputs + bias:");
 		trO.print("Outputs:");
-		tsI.print("Test Inputs + bias:");
-		tsO.print("Expected Outputs:");
 	}
 
-	// shuffle the training data
-	//trI.shuffle();
+
+	
 
 	// ---- main training loop ---- //
 	for (int itr = 0; itr < numPasses; itr++) {
-		int i = rand() % trI.numRows();
+		x = Matrix(trI);
+		t = Matrix(trO);
 
-		x = trI.extract(i, 0, 1, 0);
-		t = trO.extract(i, 0, 1, 0);
-		y = x.dot(w).mapCol(&transfer);
+		y = x.dot(w).map(&transfer);
 		df = t.sub(y);
 		
 		d = x.Tdot(df).scalarMul(eta);
@@ -100,11 +91,7 @@ int main (int argc, char *argv[]) {
 
 		if (debug && (itr < peek || itr > numPasses - peek)) {
 			printf("\nitr: %d\n", itr);
-			/*w.print();
-			x.print();
-			t.print();
-			y.print();
-			d.print();*/
+			//w.print(); x.print(); t.print(); y.print(); d.print();
 			printf("diff:\n");
 			df.print();
 		}
@@ -113,19 +100,19 @@ int main (int argc, char *argv[]) {
 	// ---- get results based on test data ---- //
 	for (int i = 0; i < tsI.numRows(); i++) {
 		x = tsI.extract(i, 0, 1, 0);
-		t = tsO.extract(i, 0, 1, 0);
-		y = x.dot(w).mapCol(&transfer);
+
+		y = x.dot(w).map(&transfer);
 		df = t.sub(y);
 
 		y = y.joinRight(df);
 		r = r.joinBottom(y);
 	}
 
-	m = tsI.joinRight(r);
-	m.print("Tests + bias + results + diff:");
+	//m = tsIU.joinRight(r);
+	//m.print("Tests + bias + results + diff:");
 }
 
-double transfer (int s, double *v) {
-	return 1.0 / (1.0 + exp(-slope * *v));
-	//return *v < 0.5 ? 0.0 : 1.0;
+double transfer (double v) {
+	return 1.0 / (1.0 + exp(-slope * v)); //sigmoid function
+	//return *v < 0.5 ? 0.0 : 1.0; //square cutoff
 }
