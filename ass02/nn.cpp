@@ -9,107 +9,160 @@
 #include "nn.h"
 
 // ---- constants ---- //
-const double eta = 2.0;
-const double slope = 0.1;
-const double bias = -1.0;
-const int numPasses = 10000;
-const double spread = 0.5;
+double NeuralNet::eta = 2.0;
+static double slope = 0.1;
+double NeuralNet::bias = -1.0;
+double NeuralNet::spread = 0.5;
 
-const bool debug = false;
-const int peek = 5;
+const int numPasses = 1;
+
+bool NeuralNet::debug = false;
 
 int main (int argc, char *argv[]) {
+
+	// check that args are good
+	if (argc-1 > 1) {
+		printf("%d is not a valid number of inputs. Please provide a single integer (0-9) for number of nodes in the hidden layer.\n", argc-1);
+		return -1;
+	}
+
+	int nodes = 1;
+	if (argc-1 == 1) {
+		nodes = atoi(argv[1]);
+		
+		if (nodes < 1 || nodes > 10) {
+			printf("%d is not a valid number of nodes. Please provide a single integer (1-10) for the number of nodes in the hidden layers.\n", nodes);
+			return -1;
+		}
+	}
 
 	srand(time(NULL));
 	initRand();
 
-	// ---- read & process the input ---- //
+	NeuralNet nn = NeuralNet(nodes);
+	nn.read();
+	nn.train(numPasses);
+	//nn.guess();
+}
+
+// constructor
+NeuralNet::NeuralNet(int _nodes) {
+
+	nodes = _nodes;
+
+	trI = new Matrix("in");  // training input
+	trO = new Matrix("out"); // training output
+
+	X = new Matrix("X");
+	V = new Matrix("V");
+	H = new Matrix("H");
+	W = new Matrix("W");
+	Y = new Matrix("Y");
+	T = new Matrix("T");
+	
+	r = new Matrix("r"); // recursivly built row by row
+	m = new Matrix("m"); // final output matrix
+}
+
+// ---- read & process the input ---- //
+void NeuralNet::read() {
 
 	// read in the number of features to be used for each data point
-	int N; cin >> N;
-
-	// initialize and name arrays
-		// setup matrices
-	Matrix trI = Matrix("in");    // training input
-	Matrix trO = Matrix("out");   // training output
-	
-		// for the training
-	Matrix w = Matrix("w"); // weights
-	Matrix x = Matrix("x"); // in
-	Matrix d = Matrix("d"); // delta
-	Matrix y = Matrix("y"); // out
-	Matrix t = Matrix("t"); // expected
-	Matrix df = Matrix("df"); // difference (t - y)
-
-		// for the output
-	Matrix r = Matrix("r"); // recursivly built row by row
-	Matrix m = Matrix("m"); // final output matrix
-
+	cin >> N;
 
 	// read in the input data
-	trI.read();
+	trI->read();
 
 	// extract the expected outputs
-	trO = trI.extract(0, N, 0, 0);
+	*trO = trI->extract(0, 0, 0, N+1);
+	M = trO->numCols();
+	//trO->print();
 
 	// truncate the data (cut out expected outputs)
-	trI = Matrix(trI.extract(0, 0, 0, N));
+	*trI = Matrix(trI->extract(0, 0, 0, N));
 
 	// normalize the data
-	/*Matrix norm = */trI.normalizeCols();
+	trI->normalize();
 
-	// add bias column vector
-	Matrix bV = Matrix(trI.numRows(), 1, bias, "bias");
-	trI = trI.joinRight(bV);
-	
-	// settup weights vector
-	w = Matrix(trI.numCols(), trO.numCols(), 0.0)
-							.rand(-spread, spread);
-	
-	// settup delta vector
-	d = Matrix(trI.numCols(), 1, 0.0);
+	*V = Matrix(N+1, nodes, 0.0).rand(-spread, spread);
+	*W = Matrix(nodes+1, M, 0.0).rand(-spread, spread);
 
-	// --- print input that was read ---- //
-	if (!debug) {
-		trI.print("Inputs + bias:");
-		trO.print("Outputs:");
-	}
+	//trI->print();
+	trO->print("Target:");
 
+}
 
-	
+void NeuralNet::train(int passes) {
 
-	// ---- main training loop ---- //
-	for (int itr = 0; itr < numPasses; itr++) {
-		x = Matrix(trI);
-		t = Matrix(trO);
+	for (int i = 0; i < passes; i++) {
+		// Add the bias to the inputs X by adding a -1 column. X -> Xplus.
+		Matrix bv = Matrix(trI->numRows(), 1, bias, "bias");
+		*X = trI->joinRight(bv);
 
-		y = x.dot(w).map(&transfer);
-		df = t.sub(y);
+		// Retrieve expected matrix
+		*T = Matrix(*trO);
+
+		// H = f(Xplus V)
+		*H = X->dot(*V).map(&transfer);
+
+		// Add the bias to the hidden layer by adding a -1 column. H -> Hplus.
+		bv = Matrix(H->numRows(), 1, bias, "bias");
+		*H = H->joinRight(bv);
+
+		// Y = f(Hplus W)
+		*Y = H->dot(*W).map(&transfer);
+
 		
-		d = x.Tdot(df).scalarMul(eta);
-		w = w.add(d);
+		// Now the backward propagation phase
 
-		if (debug && (itr < peek || itr > numPasses - peek)) {
-			printf("\nitr: %d\n", itr);
-			//w.print(); x.print(); t.print(); y.print(); d.print();
-			printf("diff:\n");
-			df.print();
-		}
+		// Wdelta = (Y - T) * Y * (1 - Y)
+		Matrix diff = Y->sub(*T);
+		Matrix omY = Matrix(Y->numRows(), Y->numCols(), 1.0, "omY");
+		omY = omY.sub(*Y);
+		Matrix Wd = diff.mul(*Y).mul(omY);
+
+		// Hdelta = Hplus * (1 - Hplus) * (Wdelta Wtrans)
+		Matrix omH = Matrix(H->numRows(), H->numCols(), 1.0, "omH");
+		omH = omH.sub(*H);
+		Matrix WdW = Wd.dotT(*W);
+		Matrix Hd = H->mul(omH).mul(WdW);
+
+		// W -= eta(Hplus-trans Wdelta) 
+		*W = W->sub(H->Tdot(Wd).scalarMul(eta));
+
+		// Hdelta -> Hdelta-mnus
+		Hd = Hd.extract(0, 0, Hd.numCols() - 1, 0);
+
+		// V -= eta(Xplus-trans Hdelta-minus)
+		Matrix d = X->Tdot(Hd).scalarMul(eta);
+		*V = V->sub(d);
+		
+		
 	}
+}
 
-	// ---- get results based on test data ---- //
-	for (int i = 0; i < tsI.numRows(); i++) {
-		x = tsI.extract(i, 0, 1, 0);
+void NeuralNet::guess() {
 
-		y = x.dot(w).map(&transfer);
-		df = t.sub(y);
+	// Add the bias to the inputs X by adding a -1 column. X -> Xplus.
+	Matrix bv = Matrix(trI->numRows(), 1, bias, "bias");
+	*X = trI->joinRight(bv);
 
-		y = y.joinRight(df);
-		r = r.joinBottom(y);
-	}
+	// Retrieve expected matrix
+	*T = trO;
 
-	//m = tsIU.joinRight(r);
-	//m.print("Tests + bias + results + diff:");
+	// H = f(Xplus V)
+	*H = X->dot(V).map(&transfer);
+
+	// Add the bias to the hidden layer by adding a -1 column. H -> Hplus.
+	bv = Matrix(H->numRows(), 1, bias, "bias");
+	*H = H->joinRight(bv);
+
+	// Y = f(Hplus W)
+	*Y = H->dot(W).map(&transfer);
+
+	//trO->print("Target:");
+	Y->print("Predicted:");		
+
 }
 
 double transfer (double v) {
