@@ -1,0 +1,44 @@
+#/bin/sh
+echo
+echo "================="
+echo "pca 10 < girlWithPearlEarring.ppm"
+time ./pca 10 < girlWithPearlEarring.ppm
+mv z.ppm girlWithPearlEarring-10.ppm
+
+echo
+echo "================="
+echo "pca 40 < girlWithPearlEarring.ppm"
+time ./pca 40 < girlWithPearlEarring.ppm
+mv z.ppm girlWithPearlEarring-40.ppm
+
+echo
+echo "================="
+echo "pca 200 < girlWithPearlEarring.ppm"
+time ./pca 200 < girlWithPearlEarring.ppm
+mv z.ppm girlWithPearlEarring-200.ppm
+
+echo
+echo "================="
+echo "pca 40 < girlWithPearlEarringJohansson.ppm"
+time ./pca 40 < girlWithPearlEarringJohansson.ppm
+mv z.ppm girlWithPearlEarringJohansson-40.ppm
+
+echo
+echo "================="
+echo "pca 40 < abbeyRoadAlbumCover.ppm"
+time ./pca 40 < abbeyRoadAlbumCover.ppm
+mv z.ppm abbeyRoadAlbumCover-40.ppm
+
+echo
+echo "================="
+echo "pca 400 < abbeyRoadAlbumCover.ppm"
+time ./pca 400 < abbeyRoadAlbumCover.ppm
+mv z.ppm abbeyRoadAlbumCover-400.ppm
+
+echo
+echo "================="
+echo "pca 40 < bambooXuBeihong.pgm"
+time ./pca 40 < bambooXuBeihong.pgm
+mv z.pgm bambooXuBeihong-40.pgm
+
+ls -l *.ppm *.pgm
