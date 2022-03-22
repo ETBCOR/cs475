@@ -1,9 +1,9 @@
 /*****************************
  * By:			Ethan Corgatelli
- * File:        pca.h
- * Project:     Assignment 3
+ * File:        knn.h
+ * Project:     Assignment 5
  * Class:       cs475
- * Asn. Pg:     http://marvin.cs.uidaho.edu/Teaching/CS475/pas03.pdf
+ * Asn. Pg:     http://marvin.cs.uidaho.edu/Teaching/CS475/pas04.pdf
  *
  *****************************/
 #include <iostream>

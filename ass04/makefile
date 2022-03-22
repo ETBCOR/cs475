@@ -1,25 +1,35 @@
-CXXFLAGS=-O3 -Wall # optimize and complain
+ FLAGS=-O3 # -Wall optimize and complain
 
-# abbeyRoadAlbumCover.ppm
-# bambooXuBeihong.pgm
-# girlWithPearlEarring.ppm
-# girlWithPearlEarringJohansson.ppm
+FILENAME=knn
 
-FILENAME=pca
-IN=girlWithPearlEarring.ppm
-K=40
+K=1
+
+# colorsUniqList.txt
+# crayola16dupList.txt
+# crayolaCrayonsList.txt
+# smallList.txt
+
+LIST=smallList.txt
+
+# colorsUniqTest.txt
+# crayolaCrayonsTest.txt
+# randomColorsTest.txt
+# smallTest.txt
+# vandalTest.txt
+
+TEST=smallTest.txt
 
 o: ${FILENAME}.cpp mat.o rand.o
-	g++ ${CXXFLAGS} -o ${FILENAME} ${FILENAME}.cpp mat.o rand.o
+	g++ ${FLAGS} -o ${FILENAME} ${FILENAME}.cpp mat.o rand.o
 
 mat.o: mat.cpp rand.o
-	g++ ${CXXFLAGS} -c -o mat.o mat.cpp
+	g++ ${FLAGS} -c -o mat.o mat.cpp
 
 rand.o: rand.cpp
-	g++ ${CXXFLAGS} -O3 -c -o rand.o rand.cpp
+	g++ ${FLAGS} -c -o rand.o rand.cpp
 
 run: clean o
-	./${FILENAME} ${K} < ${IN}
+	cat ${LIST} ${TEST} | ./${FILENAME} ${K}
 
 clean:
-	rm -f ${FILENAME} *.o z.ppm z.pgm
+	rm -f ${FILENAME}

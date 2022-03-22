@@ -32,5 +32,5 @@ cat colorsUniqList.txt crayolaCrayonsTest.txt | ./knn 2
 # cat crayolaCrayonsList.txt colorsUniqTest.txt  | ./knn 2
 echo
 echo "==============="
-echo "cat crayolaCrayonsList.txt randomColorsTest.txt | knn 6"
-cat crayolaCrayonsList.txt randomColorsTest.txt | knn 6
+echo "cat crayolaCrayonsList.txt randomColorsTest.txt | ./knn 6"
+cat crayolaCrayonsList.txt randomColorsTest.txt | ./knn 6
