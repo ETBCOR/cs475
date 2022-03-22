@@ -1,0 +1,36 @@
+echo
+echo "==============="
+echo "cat smallList.txt smallTest.txt | ./knn 1"
+cat smallList.txt smallTest.txt | ./knn 1
+echo
+echo "==============="
+echo "cat smallList.txt smallTest.txt | ./knn 5"
+cat smallList.txt smallTest.txt | ./knn 5
+echo
+echo "==============="
+echo "cat crayolaCrayonsList.txt smallTest.txt | ./knn 3"
+cat crayolaCrayonsList.txt smallTest.txt | ./knn 3
+echo
+echo "==============="
+echo "cat crayolaCrayonsList.txt vandalTest.txt | ./knn 3"
+cat crayolaCrayonsList.txt vandalTest.txt | ./knn 3
+echo
+echo "==============="
+echo "cat colorsUniqList.txt smallTest.txt | ./knn 3"
+cat colorsUniqList.txt smallTest.txt | ./knn 3
+echo
+echo "==============="
+echo "cat colorsUniqList.txt vandalTest.txt | ./knn 4"
+cat colorsUniqList.txt vandalTest.txt | ./knn 4
+echo
+echo "==============="
+echo "cat colorsUniqList.txt crayolaCrayonsTest.txt | ./knn 2"
+cat colorsUniqList.txt crayolaCrayonsTest.txt | ./knn 2
+# echo
+# echo "==============="
+# echo "cat crayolaCrayonsList.txt colorsUniqTest.txt  | ./knn 2"
+# cat crayolaCrayonsList.txt colorsUniqTest.txt  | ./knn 2
+echo
+echo "==============="
+echo "cat crayolaCrayonsList.txt randomColorsTest.txt | knn 6"
+cat crayolaCrayonsList.txt randomColorsTest.txt | knn 6
