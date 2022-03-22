@@ -10,13 +10,13 @@ IN=girlWithPearlEarring.ppm
 K=40
 
 o: ${FILENAME}.cpp mat.o rand.o
-	g++ -o ${FILENAME} ${FILENAME}.cpp mat.o rand.o
+	g++ ${CXXFLAGS} -o ${FILENAME} ${FILENAME}.cpp mat.o rand.o
 
 mat.o: mat.cpp rand.o
-	g++ -c -o mat.o mat.cpp
+	g++ ${CXXFLAGS} -c -o mat.o mat.cpp
 
 rand.o: rand.cpp
-	g++ -c -o rand.o rand.cpp
+	g++ ${CXXFLAGS} -O3 -c -o rand.o rand.cpp
 
 run: clean o
 	./${FILENAME} ${K} < ${IN}
