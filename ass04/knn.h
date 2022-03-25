@@ -1,7 +1,7 @@
 /*****************************
  * By:			Ethan Corgatelli
  * File:        knn.h
- * Project:     Assignment 5
+ * Project:     Assignment 4
  * Class:       cs475
  * Asn. Pg:     http://marvin.cs.uidaho.edu/Teaching/CS475/pas04.pdf
  *
