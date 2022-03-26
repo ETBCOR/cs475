@@ -1,0 +1,37 @@
+BIN=kdtree
+echo
+echo "==============="
+echo "cat smallList.txt smallTest.txt | ./$BIN"
+cat smallList.txt smallTest.txt | ./$BIN
+echo
+echo "==============="
+echo "cat smallList.txt smallTest.txt | ./$BIN"
+cat smallList.txt smallTest.txt | ./$BIN
+echo
+echo "==============="
+echo "cat crayolaCrayonsList.txt smallTest.txt | ./$BIN"
+cat crayolaCrayonsList.txt smallTest.txt | ./$BIN
+echo
+echo "==============="
+echo "cat crayolaCrayonsList.txt vandalTest.txt | ./$BIN"
+cat crayolaCrayonsList.txt vandalTest.txt | ./$BIN
+echo
+echo "==============="
+echo "cat colorsUniqList.txt smallTest.txt | ./$BIN"
+cat colorsUniqList.txt smallTest.txt | ./$BIN
+echo
+echo "==============="
+echo "cat colorsUniqList.txt vandalTest.txt | ./$BIN"
+cat colorsUniqList.txt vandalTest.txt | ./$BIN
+echo
+echo "==============="
+echo "cat colorsUniqList.txt crayolaCrayonsTest.txt | ./$BIN"
+cat colorsUniqList.txt crayolaCrayonsTest.txt | ./$BIN
+# echo
+# echo "==============="
+# echo "cat crayolaCrayonsList.txt colorsUniqTest.txt  | ./$BIN"
+# cat crayolaCrayonsList.txt colorsUniqTest.txt  | ./$BIN
+echo
+echo "==============="
+echo "cat crayolaCrayonsList.txt randomColorsTest.txt | $BIN"
+cat crayolaCrayonsList.txt randomColorsTest.txt | $BIN
