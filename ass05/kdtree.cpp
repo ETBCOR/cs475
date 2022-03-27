@@ -6,36 +6,19 @@
  * Asn. Pg:		http://marvin.cs.uidaho.edu/Teaching/CS475/pas05.pdf
  *
  *****************************/
-#include "knn.h"
+#include "kdtree.h"
 
 int main (int argc, char *argv[]) {
 
-	// check that args are good
-	if (argc-1 != 1) {
-		printf("%d is not a valid number of inputs. Please provide a single integer for the number of nearest neighbors to search for.\n", argc-1);
-		return -1;
-	}
-
-	// get K from command line args
-	int K = atoi(argv[1]);
-	if (K < 1) {
-		printf("%d is not a valid input value for K. We must return at least one nearest neighbor.\n", K);
-		return -1;
-	}
-
-	Matrix list("list");
+	Matrix tree("tree");
 	Matrix test("test");
 	SymbolNumMap lables;
 
-	list.readLabeledRow(&lables);
+	tree.readLabeledRow(&lables);
 	test.read();
 
 // BUILD THE KD-TREE
-// sort by column c
-// median is middle of sorted list
-// call build with left side and c+1
-// call build with right side and c+1
-
+	build(&tree, 1, 0, tree.numRows() - 1, 0);
 
 //SEARCH THE KD-TREE
 //kdtree(int bestrow, int bestdistance) returns bestrow and bestdistance
@@ -55,5 +38,30 @@ int main (int argc, char *argv[]) {
 // do split point (parent)
 // if better bestrow save that as new bestnode
 
-	}
+	//Matrix out();
+	tree.printLabeledRow(&lables);
+}
+
+// BUILD THE KD-TREE
+void build (Matrix *t, int c, int lower, int upper, int i) {
+	int size = upper-lower+1;
+	//printf("#%d (%d-%d) size: %d\n", i, lower, upper, size);
+
+	// base case
+	if (size <= 2 || i > 50) return;
+
+	// sort by column c
+	t->sortRowsByCol(c, lower, upper);
+
+	// median is middle of sorted list
+	int m = size / 2.0f + lower;
+
+	c = (c == 3) ? 1 : c + 1; // increment c
+
+	// call build with left side and c+1
+	//printf("do left (%d-%d):\n", lower, m - 1);
+	build(t, c, lower, m - 1, i + 1);
+	// call build with right side and c+1
+	//printf("do right (%d-%d):\n", m + 1, upper);
+	build(t, c, m + 1, upper, i + 1);
 }

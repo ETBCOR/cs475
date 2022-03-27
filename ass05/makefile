@@ -1,14 +1,10 @@
- FLAGS=-O3 # -Wall optimize and complain
+FLAGS=-O3 # -Wall optimize and complain
 
 FILENAME=kdtree
 
-#colorsUniqList.txt
-#crayola16dupList.txt
-#crayolaCrayonsList.txt
+LIST=smallList.txt
 
-LIST=crayola16upList.txt
-
-TEST=colorsUniqTest.txt
+TEST=smallTest.txt
 
 o: ${FILENAME}.cpp mat.o rand.o
 	g++ ${FLAGS} -o ${FILENAME} ${FILENAME}.cpp mat.o rand.o
@@ -21,6 +17,11 @@ rand.o: rand.cpp
 
 run: clean o
 	cat ${LIST} ${TEST} | ./${FILENAME}
+
+test: o
+	rm -f my.out
+	./localtest > my.out
+	diff my.out localtest.out
 
 clean:
 	rm -f ${FILENAME}

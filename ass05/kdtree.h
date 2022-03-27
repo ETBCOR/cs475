@@ -13,3 +13,4 @@
 #include "mat.h"
 #include "rand.h"
 
+void build (Matrix *t, int c, int lower, int upper, int i);

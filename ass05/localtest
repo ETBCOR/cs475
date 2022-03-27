@@ -33,5 +33,5 @@ cat colorsUniqList.txt crayolaCrayonsTest.txt | ./$BIN
 # cat crayolaCrayonsList.txt colorsUniqTest.txt  | ./$BIN
 echo
 echo "==============="
-echo "cat crayolaCrayonsList.txt randomColorsTest.txt | $BIN"
-cat crayolaCrayonsList.txt randomColorsTest.txt | $BIN
+echo "cat crayolaCrayonsList.txt randomColorsTest.txt | ./$BIN"
+cat crayolaCrayonsList.txt randomColorsTest.txt | ./$BIN
