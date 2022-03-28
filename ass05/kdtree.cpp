@@ -19,27 +19,13 @@ int main (int argc, char *argv[]) {
 
 // BUILD THE KD-TREE
 	build(&tree, 1, 0, tree.numRows() - 1, 0);
+	//tree.printLabeledRow(&lables);
 
 //SEARCH THE KD-TREE
+	int *bestrow;
+	float *bestdist;
 //kdtree(int bestrow, int bestdistance) returns bestrow and bestdistance
-// if leaf node
-// if better bestrow save that as new best node
-// else if parent node case
-// if item left of split point?
-// do left then right
-// call search(best) on left -> bestrow and best
-// if dist(item, split point) in dimension c > best then return
-// call search(best) on right
-// else
-// do right then left
-// call search(best) on right -> bestrow and best
-// if dist(item, split point) in dimension c > best then return
-// call search(best) on left
-// do split point (parent)
-// if better bestrow save that as new bestnode
-
-	//Matrix out();
-	tree.printLabeledRow(&lables);
+	search(&tree, bestrow, bestdist, 0, tree.numRows() - 1);
 }
 
 // BUILD THE KD-TREE
@@ -55,6 +41,7 @@ void build (Matrix *t, int c, int lower, int upper, int i) {
 
 	// median is middle of sorted list
 	int m = size / 2.0f + lower;
+	//printf("m: %d\n", m);
 
 	c = (c == 3) ? 1 : c + 1; // increment c
 
@@ -64,4 +51,31 @@ void build (Matrix *t, int c, int lower, int upper, int i) {
 	// call build with right side and c+1
 	//printf("do right (%d-%d):\n", m + 1, upper);
 	build(t, c, m + 1, upper, i + 1);
+}
+
+//SEARCH THE KD-TREE
+void search(Matrix *t, int *bestrow, float*bestdist, int lower, int upper) {
+	int size = upper-lower+1;
+	// if leaf node
+	if (size <= 0) {
+		return;
+	} else if (size <= 1) {
+		
+	} else if (size <= 2)
+		// if better bestrow save that as new best node
+
+	// else if parent node case
+		// if item left of split point?
+			// do left then right
+				// call search(best) on left -> bestrow and best
+				// if dist(item, split point) in dimension c > best then return
+				// call search(best) on right
+	// else
+		// do right then left
+				// call search(best) on right -> bestrow and best
+				// if dist(item, split point) in dimension c > best then return
+				// call search(best) on left
+
+	// do split point (parent)
+		// if better bestrow save that as new bestnode
 }

@@ -14,3 +14,5 @@
 #include "rand.h"
 
 void build (Matrix *t, int c, int lower, int upper, int i);
+void search (Matrix *t, int bestrow, float bestdist, int lower, int upper);
+
