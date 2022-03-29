@@ -2,7 +2,7 @@ FLAGS=-O3 # -Wall optimize and complain
 
 FILENAME=kdtree
 
-LIST=colorsUniqList.txt
+LIST=smallList.txt
 
 TEST=smallTest.txt
 
