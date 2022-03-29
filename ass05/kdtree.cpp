@@ -54,13 +54,13 @@ void build (Matrix *t, int c, int lower, int upper, int i) {
 }
 
 //SEARCH THE KD-TREE
-void search(Matrix *t, int *bestrow, float*bestdist, int lower, int upper) {
+void search(Matrix *t, Matrix x, int *bestrow, float *bestdist, int lower, int upper) {
 	int size = upper-lower+1;
 	// if leaf node
 	if (size <= 0) {
 		return;
 	} else if (size <= 1) {
-		
+		check();
 	} else if (size <= 2)
 		// if better bestrow save that as new best node
 
@@ -78,4 +78,15 @@ void search(Matrix *t, int *bestrow, float*bestdist, int lower, int upper) {
 
 	// do split point (parent)
 		// if better bestrow save that as new bestnode
+}
+
+int check (Matrix *t, Matrix x, int *bestrow, float *bestdist, int r) {
+	Matrix ch(); // best
+
+	b = 
+	x = t.subMatrix(r, 1, 1, 0);
+	if (x.dist(b) < *bestrow) {
+		
+	}
+	return 0;
 }
