@@ -1,0 +1,12 @@
+11 4
+VandalGold 241 179 0
+VandalSilver 128 128 128
+VandalBlack 25 25 25
+VandalMetallicGold 133 117 80
+Garnet 210 38 48
+WildRose 225 0 152
+PalouseGreen 0 175 102
+Clearwater 0 174 199
+Clearwater50 139 213 229
+PayetteBlue 0 62 81
+PonderosaPine 0 78 66

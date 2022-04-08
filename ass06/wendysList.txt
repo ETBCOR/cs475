@@ -1,0 +1,6 @@
+5 4
+WendysOutlineBlack 47 30 24
+WendysLightBlue 36 172 233
+WendysMaroon 156 11 43
+WendysRed 221 20 56
+WendysSkin 252 211 215
