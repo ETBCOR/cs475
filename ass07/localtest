@@ -1,0 +1,30 @@
+BIN=kmeans
+
+testit () {
+   numgroups=$1
+   file=$2
+   echo
+   echo "==============="
+   echo "==============="
+   echo "./$BIN $numgroups 20 < $file"
+   ./$BIN $numgroups 20 < $file > z
+   cat z
+   echo AVERAGE TRIES: 
+   #grep Tries z | avgcol 3
+}
+
+testit 8 clouds8.in
+testit 3 flat3.in
+testit 3 iris3.in
+testit 3 mouse3.in
+echo "-----------------"
+testit 3 mix5.in
+testit 4 mix5.in
+testit 5 mix5.in
+testit 6 mix5.in
+testit 10 mix5.in
+echo "-----------------"
+testit 2 round3.in
+testit 3 round3.in
+testit 4 round3.in
+testit 5 round3.in

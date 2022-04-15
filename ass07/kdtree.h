@@ -1,0 +1,19 @@
+/*****************************
+ * By:			Ethan Corgatelli
+ * File:        kdtree.h (improved output)
+ * Project:     Assignment 6
+ * Class:       cs475
+ * Asn. Pg:     http://marvin.cs.uidaho.edu/Teaching/CS475/pas06.pdf
+ *
+ *****************************/
+#include <iostream>
+#include <time.h>
+#include <stdlib.h>
+#include <math.h>
+#include "mat.h"
+#include "rand.h"
+#include <cfloat>
+
+void build (Matrix *t, int c, int lower, int upper, int i);
+void search (Matrix *t, Matrix x, int *bestrow, float *bestdist, int lower, int upper, int c = 0);
+int check (Matrix *t, Matrix x, int *bestrow, float *bestdist, int r);
