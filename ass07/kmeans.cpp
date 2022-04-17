@@ -9,36 +9,45 @@
 #include "kmeans.h"
 
 int main (int argc, char **argv) {
+	// check number of args
 	if (argc-1 != 2) {
 		printf("Not enough arguments. Provide two integers: k (amount of clusters), and t (amount of trials).\n");
 		return -1;
 	}
 
+	// get k and t
 	const int k = atoi(argv[1]);
 	const int t = atoi(argv[2]);
 
+	// check k
 	if (k < 1) {
 		printf("k (the first argument) is too small. We must use at least one clusture.\n");
 		return -1;
 	}
 
+	// check t
 	if (t < 1) {
 		printf("t (the second argument) is too small. We must do at least one trial.\n");
 		return -1;
 	}
 	
 	initRand();
-	
+
+	// read in the data
 	Matrix data("kdtree");
 	data.read();
 
 	// add col to the data for which class it belongs to
 	data.widen(data.numCols() + 1, -1.0f);
 
+	// arrays to store each trial in
 	Matrix trials[t];
 	float scores[t];
+	
+	// do multiple trials
 	for (int trial = 0; trial < t; trial++) {
 
+		// make a version of the data that doesn't have the extra col
 		Matrix dataClean("dataClean");
 		dataClean = data.subMatrix(0, 0, 0, data.numCols() - 1);
 		Matrix means(k, data.numCols()-1, "Pts");
@@ -48,9 +57,10 @@ int main (int argc, char **argv) {
 
 		bool moving = true; int n = 0;
 		do { // main loop
-			// assign each point to a clustre
+			//placeholders for points
 			Matrix point(1, data.numCols(), "point");
 			Matrix mean(1, data.numCols(), "mean");
+			// assign each point to a clustre
 			for (int i = 0; i < data.numRows(); i++) {
 				point = data.subMatrix(i, 0, 1, means.numCols());
 				float best = FLT_MAX; int index = -1;
@@ -65,6 +75,7 @@ int main (int argc, char **argv) {
 				data.set(i, data.numCols() - 1, index);
 			}
 
+			// create a spot for the new means
 			Matrix newMeans(k, means.numCols(), 0.0f, "newMeans");
 
 			// move means
@@ -100,6 +111,7 @@ int main (int argc, char **argv) {
 			}
 			avgDist += d / points.numRows();
 		}
+		//grp.sub(mean).dist/magnitude.sum / numPoints
 
 		means.sortRows();
 		trials[trial] = means;
