@@ -50,7 +50,7 @@ int main (int argc, char **argv) {
 		// make a version of the data that doesn't have the extra col
 		Matrix dataClean("dataClean");
 		dataClean = data.subMatrix(0, 0, 0, data.numCols() - 1);
-		Matrix means(k, data.numCols()-1, "Pts");
+		Matrix means(k, dataClean.numCols(), "Pts");
 		means.sampleWithoutRows(dataClean);
 
 		//means.print(); data.print();
@@ -59,7 +59,7 @@ int main (int argc, char **argv) {
 		do { // main loop
 			//placeholders for points
 			Matrix point(1, data.numCols(), "point");
-			Matrix mean(1, data.numCols(), "mean");
+			Matrix mean(1, means.numCols(), "mean");
 			// assign each point to a clustre
 			for (int i = 0; i < data.numRows(); i++) {
 				point = data.subMatrix(i, 0, 1, means.numCols());
@@ -97,30 +97,25 @@ int main (int argc, char **argv) {
 		
 		} while (moving);
 
+
+		// points.sub(mean).dist.sum / numPoints
+		float d = 0.0f;
 		Matrix points(1, data.numCols(), "points");
-		Matrix point(1, data.numCols(), "point");
-
-		float avgDist = 0.0f;
+		Matrix mean(1, means.numCols(), "mean");
 		for (int i = 0; i < means.numRows(); i++) {
-			points = data.subMatrixEq(data.numCols()-1, i);
-
-			float d = 0.0f;
-			for (int j = 0; j < points.numRows(); j++) {
-				point = points.subMatrix(j, 0, 1, points.numCols()-1);
-				d += point.dist2(means.extract(i, 0, 1, 0));
-			}
-			avgDist += d / points.numRows();
+			points = data.subMatrixEq(data.numCols() - 1, i).subMatrix(0, 0, 0, data.numCols()-1);
+			mean = means.subMatrix(i, 0, 1, 0);
+			d += points.subRowVector(mean).dist2Row().sum() / points.numRows();
 		}
-		//grp.sub(mean).dist/magnitude.sum / numPoints
 
 		means.sortRows();
 		trials[trial] = means;
-		scores[trial] = avgDist;
+		scores[trial] = d;
 		
 		printf("Num Tries: %d\n", n);
 		means.print();
 	
-		printf("total average dist: %f\n", avgDist);
+		printf("total average dist: %f\n", d);
 	}
 
 	float bD = FLT_MAX;
@@ -132,6 +127,7 @@ int main (int argc, char **argv) {
 		}
 	}
 
+	trials[bT].setName("Best Points");
 	trials[bT].print();
 	printf("best average dist: %f\n", bD);
 }
