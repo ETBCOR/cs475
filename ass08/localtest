@@ -1,0 +1,9 @@
+BIN=id7
+
+for file in *.in
+do
+   echo "==============="
+   echo "==============="
+   echo "./id7 < $file"
+   ./id7 < $file
+done

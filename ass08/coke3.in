@@ -1,0 +1,20 @@
+3 4
+ABC ant   bat  cow     
+DEF dog   elk  fox     
+Ans pepsi coke drpepper
+7 3
+ant dog coke
+ant elk pepsi
+bat dog coke
+bat dog pepsi
+bat dog coke
+cow dog drpepper
+cow elk drpepper
+7 2
+ant dog
+ant elk
+bat dog
+bat fox
+bat elk
+cow dog
+cow elk

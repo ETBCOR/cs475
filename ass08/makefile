@@ -2,7 +2,7 @@ FLAGS=-O3 # -Wall optimize and complain
 
 FILENAME=id7
 
-INPUT=
+INPUT=b.in
 
 o: ${FILENAME}.cpp tree.o mat.o rand.o
 	g++ ${FLAGS} -o ${FILENAME} ${FILENAME}.cpp mat.o rand.o tree.o
@@ -17,7 +17,7 @@ rand.o: rand.cpp
 	g++ ${FLAGS} -c -o rand.o rand.cpp
 
 run: clean o
-	./${FILENAME} ${K} ${T} < $(INPUT)
+	./${FILENAME} < ${INPUT}
 
 test: o
 	rm -f z

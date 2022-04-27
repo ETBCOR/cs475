@@ -175,7 +175,6 @@ Tree *build(const Matrix &data,
         printf("TREE A\n");
         // BUILD LEAF
         // [ ADD CODE HERE ]
-        printf("[ ADD CODE HERE ]");
     }
 
     // ELSE IF RUN OUT OF FEATURES TO TEST -> VOTE
@@ -183,7 +182,6 @@ Tree *build(const Matrix &data,
         printf("TREE B\n");
         // BUILD LEAF WITH VOTE OVER data
         // [ ADD CODE HERE ]
-        printf("[ ADD CODE HERE ]");
     }
 
     // ELSE PICK BEST GAIN AND PROCEED WITH SUBTREES
@@ -289,6 +287,12 @@ int main()
     Matrix availCol(ansCol, 1, "Available Columns");  // a column vector
     availCol.initLinear(1, 0, 0);             // list of available feature columns
 
+
+	features.printLabeledRow(syms);
+	data.print();
+
+
+/*
     // BUILD DECISION TREE
     tree = build(data, features, syms, availCol);
     tree->printWithEdges();
@@ -296,7 +300,6 @@ int main()
     // SEARCH DECISION TREE
     Matrix query("Query");
     query.readStrings(syms);
-                                                 
 
     // a map starting with number 0 for first symbol
     SymbolNumMap *fNames = new SymbolNumMap("Feature Names", 0);
@@ -310,6 +313,6 @@ int main()
         query.writeLineStrings(syms, r);
         printf("%s\n", find(tree, syms, fNames, query, r).c_str());
     }
-
+*/
     return 0;
 }
