@@ -59,11 +59,11 @@ int maxFeatureValues;            // the most number of different feature values+
 // returns symbol number
 int isOneLabel(int c, const Matrix &d)
 {
-    double ans;
+	double ans;
 
-    ans = d.minCol(c);
-    if (ans == d.maxCol(c)) return int(ans);
-    else return -1;
+	ans = d.minCol(c);
+	if (ans == d.maxCol(c)) return int(ans);
+	else return -1;
 }
 
 
@@ -74,40 +74,40 @@ int isOneLabel(int c, const Matrix &d)
 // different answers in the Ans column of the given data.
 double entropy(const Matrix &data, const Matrix &features)
 {
-    double sum, p;
-    int v;  // symbol number of feature value
+	double sum, p;
+	int v;  // symbol number of feature value
 
-    sum = 0.0;
-    for (int i=1; i<maxFeatureValues; i++) {
-        v = features.get(ansCol, i);   // get feature label i
-        if (v==missingValue) break;    // if "-" then quit
+	sum = 0.0;
+	for (int i=1; i<maxFeatureValues; i++) {
+		v = features.get(ansCol, i);   // get feature label i
+		if (v==missingValue) break;    // if "-" then quit
 
-        p = data.countEqCol(ansCol, v)/double(data.numRows());
-        if (p>0) sum += -p * log2(p);
-    }
+		p = data.countEqCol(ansCol, v)/double(data.numRows());
+		if (p>0) sum += -p * log2(p);
+	}
 
-    return sum;
+	return sum;
 }
 
 
 // given data, features, and a feature col number return information gain
 double gain(const Matrix &data, const Matrix &features, int fcol)
 {
-    double sum, p;
-    int v;  // symbol number of feature value
+	double sum, p;
+	int v;  // symbol number of feature value
 
-    // look through feature values for feature fcol starting with col=1
-    // since col=0 is the name of the feature.  Data is subseted by feature f
-    sum = 0.0;
-    for (int i=1; i<maxFeatureValues; i++) {
-        v = features.get(fcol, i);
-        if (v==missingValue) break;
+	// look through feature values for feature fcol starting with col=1
+	// since col=0 is the name of the feature.  Data is subseted by feature f
+	sum = 0.0;
+	for (int i=1; i<maxFeatureValues; i++) {
+		v = features.get(fcol, i);
+		if (v==missingValue) break;
 
-        p = data.countEqCol(fcol, v)/double(data.numRows());
-        if (p>0) sum += p * entropy(data.subMatrixEq(fcol, v), features);
-    }
+		p = data.countEqCol(fcol, v)/double(data.numRows());
+		if (p>0) sum += p * entropy(data.subMatrixEq(fcol, v), features);
+	}
 
-    return entropy(data, features) - sum;  // compute the gain
+	return entropy(data, features) - sum;  // compute the gain
 }
 
 
@@ -115,26 +115,26 @@ double gain(const Matrix &data, const Matrix &features, int fcol)
 // given the data find the most popular answer value searching
 // in the order of the feature values.  Return symbol number of featurevalue
 int vote(const Matrix &data, const Matrix &features) {
-    int bestCnt, bestV, cnt;
+	int bestCnt, bestV, cnt;
 
-    printf("VOTE\n");
+	printf("VOTE\n");
 
-    // look through all featuresvalue of Ans start with col=1
-    bestCnt = -1;
-    for (int i=1; i<maxFeatureValues; i++) {
-        int v;  // symbol number of feature value
+	// look through all featuresvalue of Ans start with col=1
+	bestCnt = -1;
+	for (int i=1; i<maxFeatureValues; i++) {
+		int v;  // symbol number of feature value
 
-        v = features.get(ansCol, i);
-        if (v==missingValue) break;
+		v = features.get(ansCol, i);
+		if (v==missingValue) break;
 
-        cnt = data.countEqCol(ansCol, v);
-        if (cnt>bestCnt) {
-            bestCnt = cnt;
-            bestV = v;
-        }
-    }
+		cnt = data.countEqCol(ansCol, v);
+		if (cnt>bestCnt) {
+			bestCnt = cnt;
+			bestV = v;
+		}
+	}
 
-    return bestV;
+	return bestV;
 }
 
 
@@ -157,162 +157,185 @@ int vote(const Matrix &data, const Matrix &features) {
 // Db) if featurevalues not present then provide a default by voting
 
 Tree *build(const Matrix &data,
-            const Matrix &features,
-            const SymbolNumMap *syms,   
-            const Matrix &availCol)          // available features to ask about
+			const Matrix &features,
+			const SymbolNumMap *syms,   
+			const Matrix &availCol)          // available features to ask about
 {
-    double ans;
-    Tree *result;
-    
-    // IF NOTHING LEFT -> system error
-    if (data.numRows()==0) {                        
-        features.print("SYSTEM ERROR. FEATURES");
-        result = new Tree("NONE");  // should NEVER get here
-    }
+	printf("\nBUILD\n\n");
+	features.printLabeledRow(syms);
+	data.printStrings(syms);
+	availCol.print();
 
-    // ELSE IF ONLY ONE TYPE OF ANSWER FOR THIS BRANCH
-    else if ((ans = isOneLabel(ansCol, data)) != -1) {      
-        printf("TREE A\n");
-        // BUILD LEAF
-        // [ ADD CODE HERE ]
-    }
+	double ans;
+	Tree *result;
 
-    // ELSE IF RUN OUT OF FEATURES TO TEST -> VOTE
-    else if (availCol.numRows()==0) {           
-        printf("TREE B\n");
-        // BUILD LEAF WITH VOTE OVER data
-        // [ ADD CODE HERE ]
-    }
+	// IF NOTHING LEFT -> system error
+	if (data.numRows()==0) {
+		features.print("SYSTEM ERROR. FEATURES");
+		result = new Tree("NONE");  // should NEVER get here
+	}
 
-    // ELSE PICK BEST GAIN AND PROCEED WITH SUBTREES
-    else {
-        double g, bestGain;
-        int bestFeatureCol;
-        int fcol;
-        
-        // LOOP THROUGH FEATURE COLUMNS find bestFeatureCol with biggest gain
-        // [ ADD CODE HERE ]
-        printf("[ ADD CODE HERE ]");
+	// ELSE IF ONLY ONE TYPE OF ANSWER FOR THIS BRANCH
+	else if ((ans = isOneLabel(ansCol, data)) != -1) {	  
+		printf("TREE A\n");
+		// BUILD LEAF
+		// [ ADD CODE HERE ]
+		result = new Tree(syms->getStrDefault(ans));
+	}
 
-        // IGNORE FEATURE WITH ONLY ONE FEATURE VALUE PRESENTED
-        if (isOneLabel(bestFeatureCol, data)>=0) {
-            printf("TREE C\n");
-            // remove the bestFeatureCol and RECURSE
-    	    // [ ADD CODE HERE ]
-	        printf("[ ADD CODE HERE ]");
-        }
-        else {
-            printf("TREE D\n");
-            // BUILD PARENT NODE FOR TWO OR MORE CHILDREN FEATURE VALUES
-    	    // [ ADD CODE HERE ]
-	        printf("[ ADD CODE HERE ]");
+	// ELSE IF RUN OUT OF FEATURES TO TEST -> VOTE
+	else if (availCol.numRows()==0) {		   
+		printf("TREE B\n");
+		// BUILD LEAF WITH VOTE OVER data
+		// [ ADD CODE HERE ]
+		ans = vote(data, features);
+		result = new Tree(syms->getStrDefault(ans));
+	}
 
-            // ADD TWO OR MORE CHILDREN
-            bool allFound=true;
-            for (int i=1; i<maxFeatureValues; i++) {
-                int v; // feature value
-    			    // [ ADD CODE HERE ]
-			        printf("[ ADD CODE HERE ]");
+	// ELSE PICK BEST GAIN AND PROCEED WITH SUBTREES
+	else {
+		double g, bestGain = 0.0f;
+		int bestFeatureCol;
+		int fcol;
 
-                    // ADD FEATUREVALUE CHILD IF THERE ARE NONZERO AMOUNT OF DATA
-    			    // [ ADD CODE HERE ]
-			        printf("[ ADD CODE HERE ]");
-            }
+		printf("D or E\n");
 
-            // IF NOT ALL FEATUREVALUES REPRESENTED ADD IN DEFAULT CHILD AS VOTE FROM DATA
-            if (! allFound) {
-                printf("TREE E\n");
-   			    // [ ADD CODE HERE ]
-		        printf("[ ADD CODE HERE ]");
-            }
-        }
-    }
+		// LOOP THROUGH FEATURE COLUMNS find bestFeatureCol with biggest gain
+		// [ ADD CODE HERE ]
+		for (int i = 0; i < availCol.numRows(); i++) {
+			fcol = availCol.get(i, 0);
+			printf("checking %s (#%d), g=%f\n", syms->getStrDefault(features.get(fcol, 0)).c_str(), fcol, g);
+			g = gain(data, features, fcol);
+			if (g > bestGain) {
+				bestGain = g;
+				bestFeatureCol = fcol;
+			}
+		}
+		Matrix availColNew("availColNew");
+		printf("best: %d\n", bestFeatureCol);
+		availColNew = availCol.subMatrixNeq(0, bestFeatureCol);
+		availColNew.print();
+		availColNew.setName("Available Columns");
 
-    return result;
+		// IGNORE FEATURE WITH ONLY ONE FEATURE VALUE PRESENTED
+		if (isOneLabel(bestFeatureCol, data)>=0) {
+			printf("TREE C\n");
+			// remove the bestFeatureCol and RECURSE
+			// [ ADD CODE HERE ]
+			result = build(data, features, syms, availColNew);
+		}
+		else {
+			printf("TREE D\n");
+			// BUILD PARENT NODE FOR TWO OR MORE CHILDREN FEATURE VALUES
+			// [ ADD CODE HERE ]
+			result = new Tree(syms->getStrDefault(features.get(bestFeatureCol, 0)));
+
+			// ADD TWO OR MORE CHILDREN
+			bool allFound=true;
+			for (int i=1; i<maxFeatureValues; i++) {
+				int v; // feature value
+				// [ ADD CODE HERE ]
+				v = features.get(bestFeatureCol, i);  // get feature value i
+				if (v==missingValue) break;     	  // if "-" then quit
+
+				Matrix d("d");
+				d = data.subMatrixEq(bestFeatureCol, v);
+				// ADD FEATUREVALUE CHILD IF THERE ARE NONZERO AMOUNT OF DATA
+				// [ ADD CODE HERE ]
+				if (d.numRows() > 0) {
+					result->addChild(syms->getStrDefault(v), build(d, features, syms, availColNew));
+				} else allFound = false;
+			}
+
+			// IF NOT ALL FEATUREVALUES REPRESENTED ADD IN DEFAULT CHILD AS VOTE FROM DATA
+			if (! allFound) {
+				printf("TREE E\n");
+   				// [ ADD CODE HERE ]
+				result->addChild("DEFAULT", new Tree(syms->getStrDefault(vote(data, features))));
+			}
+		}
+	}
+
+	return result;
 }
 
 
 
 // look up in decision tree
 string find(Tree *tree,
-            const SymbolNumMap *syms,
-            const SymbolNumMap *fNames,
-            const Matrix &query,
-            int r) {
-    int c;
-    Tree *next;
+			const SymbolNumMap *syms,
+			const SymbolNumMap *fNames,
+			const Matrix &query,
+			int r) {
+	int c;
+	Tree *next;
 
-    // LEAF: THEN RETURN NODE NAME
-    if (tree->isLeaf()) {
-	    // [ ADD CODE HERE ]
-        printf("[ ADD CODE HERE ]");
-    }
+	// LEAF: THEN RETURN NODE NAME
+	if (tree->isLeaf()) {
+		// [ ADD CODE HERE ]
+		return tree->getName();
+	}
 
-    // NOT LEAF
-    else {
-        // TRY TO FOLLOW EDGE TO SUBTREE
-        c = fNames->getNum(tree->getName());  // get column of the feature
-        next = tree->getChild(syms->getStr(query.get(r, c)));
-        if (next!=NULL) {
-		    // [ ADD CODE HERE ]
-	        printf("[ ADD CODE HERE ]");
-        }
-        // IF NO EDGE FOR FEATURE VALUE THEN GET DEFAULT VALUE
-        else {
-		    // [ ADD CODE HERE ]
-	        printf("[ ADD CODE HERE ]");
-        }
-    }
+	// NOT LEAF
+	else {
+		// TRY TO FOLLOW EDGE TO SUBTREE
+		c = fNames->getNum(tree->getName());  // get column of the feature
+		next = tree->getChild(syms->getStr(query.get(r, c)));
+		if (next!=NULL) {
+			// [ ADD CODE HERE ]
+			return find(next, syms, fNames, query, r);
+		}
+		// IF NO EDGE FOR FEATURE VALUE THEN GET DEFAULT VALUE
+		else {
+			// [ ADD CODE HERE ]
+			return tree->getChild("DEFAULT")->getName();
+		}
+	}
 }
 
 
 int main()
 {
-    Matrix features("Features");
-    Matrix data("Data");
-    SymbolNumMap *syms = new SymbolNumMap("Symbol Map");
-    Tree *tree;
+	Matrix features("Features");
+	Matrix data("Data");
+	SymbolNumMap *syms = new SymbolNumMap("Symbol Map");
+	Tree *tree;
 
-    // READ FEATUES
-    missingValue = syms->add("-");      // missing values are symbol missingValue.  Save globally
-    syms = features.readStrings(syms); // features list in column 0
+	// READ FEATUES
+	missingValue = syms->add("-");	  // missing values are symbol missingValue.  Save globally
+	syms = features.readStrings(syms); // features list in column 0
 
-    // READ DATA
-    syms = data.readStrings(syms);     // each feature in a different column
-    data.assertOtherRhs(features, "main");     // check dimensions match
-    ansCol = data.numCols()-1;         // NOTE: answer guaranteed in last column!  Save globally
-    maxFeatureValues = features.numCols(); // maximum number of feature values anywhere.  Save globally
+	// READ DATA
+	syms = data.readStrings(syms);	 // each feature in a different column
+	data.assertOtherRhs(features, "main");	 // check dimensions match
+	ansCol = data.numCols()-1;		 // NOTE: answer guaranteed in last column!  Save globally
+	maxFeatureValues = features.numCols(); // maximum number of feature values anywhere.  Save globally
 
-    // CREATE LIST OF UNUSED FEATURES
-    Matrix availCol(ansCol, 1, "Available Columns");  // a column vector
-    availCol.initLinear(1, 0, 0);             // list of available feature columns
+	// CREATE LIST OF UNUSED FEATURES
+	Matrix availCol(ansCol, 1, "Available Columns");  // a column vector
+	availCol.initLinear(1, 0, 0);			 // list of available feature columns
+
+	// BUILD DECISION TREE
+	tree = build(data, features, syms, availCol);
+	tree->printWithEdges();
+
+	// SEARCH DECISION TREE
+	Matrix query("Query");
+	query.readStrings(syms);
 
 
-	features.printLabeledRow(syms);
-	data.print();
+	// a map starting with number 0 for first symbol
+	SymbolNumMap *fNames = new SymbolNumMap("Feature Names", 0);
+	for (int i=0; i<features.numRows(); i++) {
+		// map  i <--> ith feature name
+		fNames->add(syms->getStr(features.get(i, 0))); 
+	}
 
+	for (int r=0; r<query.numRows(); r++) {
+		printf("%d ", r);
+		query.writeLineStrings(syms, r);
+		printf("%s\n", find(tree, syms, fNames, query, r).c_str());
+	}
 
-/*
-    // BUILD DECISION TREE
-    tree = build(data, features, syms, availCol);
-    tree->printWithEdges();
-
-    // SEARCH DECISION TREE
-    Matrix query("Query");
-    query.readStrings(syms);
-
-    // a map starting with number 0 for first symbol
-    SymbolNumMap *fNames = new SymbolNumMap("Feature Names", 0);
-    for (int i=0; i<features.numRows(); i++) {
-        // map  i <--> ith feature name
-        fNames->add(syms->getStr(features.get(i, 0))); 
-    }
-
-    for (int r=0; r<query.numRows(); r++) {
-        printf("%d ", r);
-        query.writeLineStrings(syms, r);
-        printf("%s\n", find(tree, syms, fNames, query, r).c_str());
-    }
-*/
-    return 0;
+	return 0;
 }

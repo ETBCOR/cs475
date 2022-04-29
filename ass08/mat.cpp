@@ -4120,7 +4120,7 @@ static void eigen(double *d, double *e, int n, double **z)
 }
 
 
-//******************************************************************************
+// ******************************************************************************
 // Computes (a2 + b2)1/2 without destructive underflow or overflow.
 //
 double pythag(double a, double b)
