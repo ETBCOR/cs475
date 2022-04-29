@@ -25,7 +25,7 @@ run: clean o
 test: o
 	rm -f z
 	./localtest > z
-	diff -y z localtest.out
+	diff -sy z localtest.out
 
 clean:
 	rm -f ${FILENAME} *.o z

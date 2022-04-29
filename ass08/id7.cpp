@@ -161,10 +161,10 @@ Tree *build(const Matrix &data,
 			const SymbolNumMap *syms,   
 			const Matrix &availCol)          // available features to ask about
 {
-	printf("\nBUILD\n\n");
+	/*printf("\nBUILD\n\n");
 	features.printLabeledRow(syms);
 	data.printStrings(syms);
-	availCol.print();
+	availCol.print();*/
 
 	double ans;
 	Tree *result;
@@ -179,7 +179,6 @@ Tree *build(const Matrix &data,
 	else if ((ans = isOneLabel(ansCol, data)) != -1) {	  
 		printf("TREE A\n");
 		// BUILD LEAF
-		// [ ADD CODE HERE ]
 		result = new Tree(syms->getStrDefault(ans));
 	}
 
@@ -187,24 +186,22 @@ Tree *build(const Matrix &data,
 	else if (availCol.numRows()==0) {		   
 		printf("TREE B\n");
 		// BUILD LEAF WITH VOTE OVER data
-		// [ ADD CODE HERE ]
 		ans = vote(data, features);
 		result = new Tree(syms->getStrDefault(ans));
 	}
 
 	// ELSE PICK BEST GAIN AND PROCEED WITH SUBTREES
 	else {
-		double g, bestGain = 0.0f;
-		int bestFeatureCol;
+		double g, bestGain = -1.0f;
+		int bestFeatureCol = 0;
 		int fcol;
 
-		printf("D or E\n");
+		//printf("C or D or E\n");
 
 		// LOOP THROUGH FEATURE COLUMNS find bestFeatureCol with biggest gain
-		// [ ADD CODE HERE ]
 		for (int i = 0; i < availCol.numRows(); i++) {
 			fcol = availCol.get(i, 0);
-			printf("checking %s (#%d), g=%f\n", syms->getStrDefault(features.get(fcol, 0)).c_str(), fcol, g);
+			//printf("checking %s (#%d), g=%f\n", syms->getStrDefault(features.get(fcol, 0)).c_str(), fcol, g);
 			g = gain(data, features, fcol);
 			if (g > bestGain) {
 				bestGain = g;
@@ -212,36 +209,32 @@ Tree *build(const Matrix &data,
 			}
 		}
 		Matrix availColNew("availColNew");
-		printf("best: %d\n", bestFeatureCol);
+		//printf("best: %d\n", bestFeatureCol);
 		availColNew = availCol.subMatrixNeq(0, bestFeatureCol);
-		availColNew.print();
+		//availColNew.print();
 		availColNew.setName("Available Columns");
 
 		// IGNORE FEATURE WITH ONLY ONE FEATURE VALUE PRESENTED
 		if (isOneLabel(bestFeatureCol, data)>=0) {
 			printf("TREE C\n");
 			// remove the bestFeatureCol and RECURSE
-			// [ ADD CODE HERE ]
 			result = build(data, features, syms, availColNew);
 		}
 		else {
 			printf("TREE D\n");
 			// BUILD PARENT NODE FOR TWO OR MORE CHILDREN FEATURE VALUES
-			// [ ADD CODE HERE ]
 			result = new Tree(syms->getStrDefault(features.get(bestFeatureCol, 0)));
 
 			// ADD TWO OR MORE CHILDREN
 			bool allFound=true;
 			for (int i=1; i<maxFeatureValues; i++) {
 				int v; // feature value
-				// [ ADD CODE HERE ]
 				v = features.get(bestFeatureCol, i);  // get feature value i
 				if (v==missingValue) break;     	  // if "-" then quit
 
 				Matrix d("d");
 				d = data.subMatrixEq(bestFeatureCol, v);
 				// ADD FEATUREVALUE CHILD IF THERE ARE NONZERO AMOUNT OF DATA
-				// [ ADD CODE HERE ]
 				if (d.numRows() > 0) {
 					result->addChild(syms->getStrDefault(v), build(d, features, syms, availColNew));
 				} else allFound = false;
@@ -250,7 +243,6 @@ Tree *build(const Matrix &data,
 			// IF NOT ALL FEATUREVALUES REPRESENTED ADD IN DEFAULT CHILD AS VOTE FROM DATA
 			if (! allFound) {
 				printf("TREE E\n");
-   				// [ ADD CODE HERE ]
 				result->addChild("DEFAULT", new Tree(syms->getStrDefault(vote(data, features))));
 			}
 		}
@@ -272,7 +264,6 @@ string find(Tree *tree,
 
 	// LEAF: THEN RETURN NODE NAME
 	if (tree->isLeaf()) {
-		// [ ADD CODE HERE ]
 		return tree->getName();
 	}
 
@@ -282,12 +273,10 @@ string find(Tree *tree,
 		c = fNames->getNum(tree->getName());  // get column of the feature
 		next = tree->getChild(syms->getStr(query.get(r, c)));
 		if (next!=NULL) {
-			// [ ADD CODE HERE ]
 			return find(next, syms, fNames, query, r);
 		}
 		// IF NO EDGE FOR FEATURE VALUE THEN GET DEFAULT VALUE
 		else {
-			// [ ADD CODE HERE ]
 			return tree->getChild("DEFAULT")->getName();
 		}
 	}
